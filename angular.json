@@ -17,6 +17,9 @@
         "build": {
           "builder": "@angular/build:application",
           "options": {
+            "outputPath": "dist/bgtut",
+            "index": "src/index.html",
+            "baseHref": "./",
             "browser": "src/main.ts",
             "polyfills": [
               "zone.js"
@@ -39,7 +42,7 @@
                 {
                   "type": "initial",
                   "maximumWarning": "500kB",
-                  "maximumError": "1MB"
+                  "maximumError": "5MB"
                 },
                 {
                   "type": "anyComponentStyle",
