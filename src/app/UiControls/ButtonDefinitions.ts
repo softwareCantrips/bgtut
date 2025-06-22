@@ -38,6 +38,55 @@ export function createSwitchToGameBoardButton(onClick?: () => void): PixiButton 
 }
 
 
+export function createPlayers2Button(onClick?: () => void): PixiButton {
+  return new PixiButton({
+    text: '2',
+    onClick: onClick ?? (() => console.log('Two Players')),
+    width: 60,
+    height: 60,
+    defaultColor: 0xbffcdd,
+    hoverColor: 0xbffcfb,
+    activeColor: 0xbfdffc,
+  });
+}
+
+export function createPlayers3Button(onClick?: () => void): PixiButton {
+  return new PixiButton({
+    text: '3',
+    onClick: onClick ?? (() => console.log('Three Players')),
+    width: 60,
+    height: 60,
+    defaultColor: 0xbffcdd,
+    hoverColor: 0xbffcfb,
+    activeColor: 0xbfdffc,
+  });
+}
+
+export function createPlayers4Button(onClick?: () => void): PixiButton {
+  return new PixiButton({
+    text: '4',
+    onClick: onClick ?? (() => console.log('Four Players')),
+    width: 60,
+    height: 60,
+    defaultColor: 0xbffcdd,
+    hoverColor: 0xbffcfb,
+    activeColor: 0xbfdffc,
+  });
+}
+
+export function createPlayers5Button(onClick?: () => void): PixiButton {
+  return new PixiButton({
+    text: '5',
+    onClick: onClick ?? (() => console.log('Five Players')),
+    width: 60,
+    height: 60,
+    defaultColor: 0xbffcdd,
+    hoverColor: 0xbffcfb,
+    activeColor: 0xbfdffc,
+  });
+}
+
+
 export function createSwitchToMainMenuButton(onClick?: () => void): PixiButton {
   return new PixiButton({
     text: 'Move to Main Menu',

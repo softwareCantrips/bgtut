@@ -10,6 +10,8 @@ import { createGridBoard } from '../UiControls/DrawGrid'
 import { Router } from '@angular/router';
 import { RouterModule } from '@angular/router';
 import '@pixi/graphics-extras';
+import { MyGameState } from '../game/LineBoard';
+import { createSpriteContainer } from '../UiControls/SpriteFactory';
 
 @Component({
   selector: 'app-game-board',
@@ -37,6 +39,7 @@ export class GameBoard {
   ngOnInit(): void {
     // Disable right-click context menu
     document.addEventListener('contextmenu', this.disableContextMenu);
+    this.gameService.startGame();
   }
 
   disableContextMenu(event: MouseEvent): void {
@@ -48,8 +51,8 @@ export class GameBoard {
     this.app = new Application();
 
     await this.app.init({
-      width: 800,
-      height: 600,
+      width: 1000,
+      height: 700,
       backgroundColor: 0xADD8E6,
       antialias: true
     });
@@ -59,43 +62,15 @@ export class GameBoard {
     this.stage.hitArea = this.app.screen;
     this.stage.eventMode = 'static';
 
-    //// Sprite
-
-    try {
-      this.straightBrownTexture = await Assets.load(this.IMAGE_PATH_STRAIGHT_BROWN);
-      console.log('Straight brown texture loaded successfully.');
-    } catch (error) {
-      console.error('Error loading straight brown texture:', error);
-    }
-
-    const spriteContainer = new Container();
-    const sprite = new Sprite(this.straightBrownTexture);
-    sprite.width = 50;
-    sprite.height = 50;
-    sprite.anchor.set(0.5);
-    spriteContainer.addChild(sprite)
-    spriteContainer.x = 250
-    spriteContainer.y = 170
-
-     const handleSnap = (gridX: number, gridY: number) => {
-      console.log(`Snapped to grid cell: (${gridX}, ${gridY})`);
-      this.gameService.makeMove("clickCell",gridX,gridY,"straight")
-    };
-
-    const gridInContainer = createGridBoard(150,150,225,225,50);
-    makeDraggable(spriteContainer,50,handleSnap,gridInContainer);
-
-    this.stage.addChild(spriteContainer)
-
-    //// Sprite End
+    const gridInContainer = createGridBoard(480,480,340,60,40);
 
     if (containerElement && this.app && this.app.canvas) {
       containerElement.appendChild(this.app.canvas as HTMLCanvasElement);
     }
 
-        const testButton = createTestButton(() => {
-      console.log('Custom button logic!');
-      this.gameService.makeMove("clickCell", 5);
+    const testButton = createTestButton(() => {
+      const currentPlayer = this.gameService.getCurrentPlayer();
+      console.log('current Player = ', currentPlayer)
     });
 
     testButton.x = 5
@@ -109,17 +84,45 @@ export class GameBoard {
     spawnButton.y = 75
 
     const switchToGameBoard = createSwitchToMainMenuButton(() => {
+      this.gameService.endGame();
       this.router.navigateByUrl('/mainmenu');
     });
 
     switchToGameBoard.x = 5
     switchToGameBoard.y = 145
 
+
+    const state = this.gameService.getState();
+    const currentPlayer = this.gameService.getCurrentPlayer();
+    console.log('Current Player = ', currentPlayer);
+    if(state && currentPlayer) {
+      const hands = state.G.hands;
+      const currentPlayersHand = hands[currentPlayer]
+      console.log(currentPlayersHand)
+
+      for(let i = 0; i < currentPlayersHand.length; i++) {
+
+        const handleSnap = (gridX: number, gridY: number, orientation: 0 | 90 | 180 | 270) => {
+          console.log(`Snapped to grid cell: (${gridX}, ${gridY})`);
+          this.gameService.makeMove("placeTile",gridX,gridY,i,orientation)
+          // TODO: Die Spieler nehmen sich momentan gegenseitig tiles weg, dadurch kann es passieren
+          // das, das i das hier als position der Karte in der Spieler Hand übergeben wird,
+          // in der Spielerhand nicht mehr existiert
+          this.gameService.endTheTurn()
+        };
+
+        const handSpriteContainer = await createSpriteContainer(currentPlayersHand[i].image, i);
+        makeDraggable(handSpriteContainer,40,handleSnap,gridInContainer);
+        this.stage.addChild(handSpriteContainer)
+
+      }
+
+    }
+    
     this.app.stage.addChild(gridInContainer);
     this.stage.addChild(testButton);
     this.stage.addChild(spawnButton);
     this.stage.addChild(switchToGameBoard);
-    this.stage.addChild(spriteContainer);
 
   }
 

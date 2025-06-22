@@ -3,7 +3,7 @@ import { Container, FederatedPointerEvent, Graphics } from 'pixi.js';
 export function makeDraggable(
   target: Container,
   gridSize: number = 0,
-  onSnap?: (gridX: number, gridY: number) => void,
+  onSnap?: (gridX: number, gridY: number, orientation: 0 | 90 | 180 | 270) => void,
   gridBoard?: Container
 ) {
   let dragging = false;
@@ -54,8 +54,10 @@ export function makeDraggable(
           target.x = snapped.x;
           target.y = snapped.y;
 
+          const orientation: 0 | 90 | 180 | 270 = convertRotationToOrientation(target.rotation);
+
           if (onSnap) {
-            onSnap(gridX, gridY);
+            onSnap(gridX, gridY, orientation);
           }
         }
       }
@@ -64,7 +66,10 @@ export function makeDraggable(
 
   target.on('rightclick', () => {
     if (dragging) {
-      target.rotation += Math.PI / 2;
+      console.log('Rotation = ',target.rotation);
+      //target.rotation += Math.PI / 2;
+      target.rotation = (target.rotation + Math.PI / 2) % (2 * Math.PI);
+      console.log('Rotation after = ',target.rotation);
     }
   });
 
@@ -74,6 +79,17 @@ export function makeDraggable(
     target.x = pos.x - offsetX;
     target.y = pos.y - offsetY;
   });
+
+  function convertRotationToOrientation(rotation: number): 0 | 90 | 180 | 270 {
+    // Convert radians to degrees
+    let degrees = (rotation * 180) / Math.PI;
+    // Normalize to range [0, 360)
+    degrees = ((degrees % 360) + 360) % 360;
+    // Round to nearest 90
+    const rounded = Math.round(degrees / 90) * 90;
+    // Cast to valid orientation
+    return rounded as 0 | 90 | 180 | 270;
+  }
 
   function snapToGrid(x: number, y: number, gridSize: number): { x: number; y: number } {
     return {
