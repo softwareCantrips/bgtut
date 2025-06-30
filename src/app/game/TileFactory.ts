@@ -1,13 +1,15 @@
 import { TrackTile, TrackPath, Direction } from './TrackTile';
 
 export function createTrackTile(
-    tileKind: 'brownStraight' | 'brownCurve' | 'greenStraight' | 'greenCurve'
+    tileKind: 'brownStraight' | 'brownCurve' | 'greenStraight' | 'greenCurve',
+    tileID: number
 ) :TrackTile {
 
     switch(tileKind) {
         case 'brownStraight':
             const brownStraight: TrackTile = {
-                id: tileKind,
+                id: tileID,
+                name: tileKind,
                 type: 'replaceable',
                 image: 'assets/images/straight-brown.jpg',
                 orientation: 0,
@@ -20,7 +22,8 @@ export function createTrackTile(
             return brownStraight;
         case 'brownCurve':
             const brownCurve: TrackTile = {
-            id: tileKind,
+            id: tileID,
+            name: tileKind,
             type: 'replaceable',
             image: 'assets/images/turn-brown.jpg',
             orientation: 0,
@@ -33,8 +36,9 @@ export function createTrackTile(
             return brownCurve;
         case 'greenStraight':
             const greenStraight: TrackTile = {
-                id: tileKind,
-                type: 'replaceable',
+                id: tileID,
+                name: tileKind,
+                type: 'notReplaceable',
                 image: 'assets/images/straight-green.jpg',
                 orientation: 0,
                 position: { x: 0, y: 0 },
@@ -46,8 +50,9 @@ export function createTrackTile(
             return greenStraight;
         case 'greenCurve':
             const greenCurve: TrackTile = {
-            id: tileKind,
-            type: 'replaceable',
+            id: tileID,
+            name: tileKind,
+            type: 'notReplaceable',
             image: 'assets/images/turn-green.jpg',
             orientation: 0,
             position: { x: 0, y: 0 },

@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Client } from 'boardgame.io/client';
 import { MyGame, MyGameState } from './game/LineBoard'
+import { SocketIO } from 'boardgame.io/multiplayer'
+import { TrackTile } from './game/TrackTile';
 
 @Injectable({
   providedIn: 'root'
@@ -9,18 +11,42 @@ export class GameService {
 
   private _gameClient: ReturnType<typeof Client> | null = null;
   private _numPlayers = 2;
+  private _playerID = '0';
+
+  private _subscribers: ((state: any) => void)[] = [];
 
 
   startGame() {
     this._gameClient = Client({
       game: MyGame,
-      numPlayers: this._numPlayers
+      multiplayer: SocketIO({ server: 'localhost:8000' }),
+      numPlayers: this._numPlayers,
+      playerID: this._playerID,
     });
+
+
+    this._gameClient.subscribe((state) => {
+      this._subscribers.forEach(cb => cb(state));
+    });
+
+
     this._gameClient.start();
+  }
+
+  onUpdate(callback: (state: any) => void) {
+    this._subscribers.push(callback);
   }
 
   endGame() {
     this._gameClient?.stop?.();
+  }
+
+  setPlayerID(pID: string) {
+    this._playerID = pID;
+  }
+
+  getPlayerID(): string {
+    return this._playerID;
   }
 
   setNumPlayers(n: number) {
@@ -36,7 +62,6 @@ export class GameService {
   }
 
   makeMove(moveName: string, ...args: any[]) {
-    console.log("In makeMove in game-service args = ", args);
     this._gameClient?.moves[moveName](...args);
   }
 

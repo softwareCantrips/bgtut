@@ -58,23 +58,28 @@ export class MainMenu {
       containerElement.appendChild(this.app.canvas as HTMLCanvasElement);
     }
 
+    // For now this does not set the amount of players but the playerID
     const twoPlayers = createPlayers2Button(() => {
       this.gameService.setNumPlayers(2);
+      this.gameService.setPlayerID('0');
     });
     twoPlayers.x = 5
     twoPlayers.y = 70
     const threePlayers = createPlayers3Button(() => {
-      this.gameService.setNumPlayers(3);
+      this.gameService.setNumPlayers(2);
+      this.gameService.setPlayerID('1');
     });
     threePlayers.x = 75
     threePlayers.y = 70
     const fourPlayers = createPlayers4Button(() => {
-      this.gameService.setNumPlayers(4);
+      this.gameService.setNumPlayers(2);
+      this.gameService.setPlayerID('4');
     });
     fourPlayers.x = 145
     fourPlayers.y = 70
     const fivePlayers = createPlayers5Button(() => {
-      this.gameService.setNumPlayers(5);
+      this.gameService.setNumPlayers(2);
+      this.gameService.setPlayerID('5');
     });
     fivePlayers.x = 215
     fivePlayers.y = 70

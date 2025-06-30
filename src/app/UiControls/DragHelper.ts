@@ -1,10 +1,12 @@
 import { Container, FederatedPointerEvent, Graphics } from 'pixi.js';
+import { TrackTile } from '../game/TrackTile';
 
 export function makeDraggable(
   target: Container,
   gridSize: number = 0,
-  onSnap?: (gridX: number, gridY: number, orientation: 0 | 90 | 180 | 270) => void,
-  gridBoard?: Container
+  onSnap: (trackTile: TrackTile) => void,
+  gridBoard: Container,
+  trackTile: TrackTile
 ) {
   let dragging = false;
   let offsetX = 0;
@@ -57,7 +59,9 @@ export function makeDraggable(
           const orientation: 0 | 90 | 180 | 270 = convertRotationToOrientation(target.rotation);
 
           if (onSnap) {
-            onSnap(gridX, gridY, orientation);
+            trackTile.position = {x:gridX,y:gridY}
+            trackTile.orientation = orientation;
+            onSnap(trackTile);
           }
         }
       }

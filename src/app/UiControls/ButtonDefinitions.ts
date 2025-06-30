@@ -40,8 +40,8 @@ export function createSwitchToGameBoardButton(onClick?: () => void): PixiButton 
 
 export function createPlayers2Button(onClick?: () => void): PixiButton {
   return new PixiButton({
-    text: '2',
-    onClick: onClick ?? (() => console.log('Two Players')),
+    text: 'P 0',
+    onClick: onClick ?? (() => console.log('Player 0')),
     width: 60,
     height: 60,
     defaultColor: 0xbffcdd,
@@ -52,8 +52,8 @@ export function createPlayers2Button(onClick?: () => void): PixiButton {
 
 export function createPlayers3Button(onClick?: () => void): PixiButton {
   return new PixiButton({
-    text: '3',
-    onClick: onClick ?? (() => console.log('Three Players')),
+    text: 'P 1',
+    onClick: onClick ?? (() => console.log('Player 1')),
     width: 60,
     height: 60,
     defaultColor: 0xbffcdd,
@@ -91,6 +91,18 @@ export function createSwitchToMainMenuButton(onClick?: () => void): PixiButton {
   return new PixiButton({
     text: 'Move to Main Menu',
     onClick: onClick ?? (() => console.log('Spawn clicked!')),
+    width: 180,
+    height: 60,
+    defaultColor: 0xbffcdd,
+    hoverColor: 0xbffcfb,
+    activeColor: 0xbfdffc,
+  });
+}
+
+export function createEndTurnButton(onClick?: () => void): PixiButton {
+  return new PixiButton({
+    text: 'End Turn',
+    onClick: onClick ?? (() => console.log('Ending the turn!')),
     width: 180,
     height: 60,
     defaultColor: 0xbffcdd,

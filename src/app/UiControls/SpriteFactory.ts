@@ -2,7 +2,7 @@ import { Assets, Container, Sprite } from "pixi.js";
 
 
 
-export async function createSpriteContainer (image:string, position:number) :Promise<Container> {
+export async function createSpriteContainer (image:string,position:number) :Promise<Container> {
 
             const texture = await Assets.load(image);
             const handSpriteContainer = new Container();
@@ -17,4 +17,25 @@ export async function createSpriteContainer (image:string, position:number) :Pro
 
             return handSpriteContainer
 
+}
+
+export function placeSpriteOnGrid(
+  container: Container,
+  gridX: number,
+  gridY: number,
+  orientation: 0 | 90 | 180 | 270,
+  xStart: number,
+  yStart: number,
+  cellSize: number
+) {
+  const rotation = convertOrientationToRotation(orientation);
+  container.rotation = rotation
+  container.x = xStart + gridX * cellSize + cellSize / 2;
+  container.y = yStart + gridY * cellSize + cellSize / 2;
+}
+
+export function convertOrientationToRotation(
+  orientation: 0 | 90 | 180 | 270
+): number {
+  return (orientation * Math.PI) / 180;
 }
