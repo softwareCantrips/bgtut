@@ -107,4 +107,8 @@ export class PixiButton extends PIXI.Container {
       this.draw(this.options.defaultColor);
     }
   }
+
+  public getText(): string {
+    return this.options.text;
+  }
 }

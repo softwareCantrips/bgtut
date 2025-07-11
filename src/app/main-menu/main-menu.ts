@@ -120,13 +120,14 @@ export class MainMenu {
   private updatePlayerButtonStates(selectedPlayerID: string, buttons: PixiButton[]): void {
     buttons.forEach(button => {
       let buttonPlayerId: string | null = null;
-      if (button.textLabel.text === 'P 0') {
+      const buttonText = button.getText();
+      if (buttonText === 'P 0') {
         buttonPlayerId = '0';
-      } else if (button.textLabel.text === 'P 1') {
+      } else if (buttonText === 'P 1') {
         buttonPlayerId = '1';
-      } else if (button.textLabel.text === '4') { // Corresponds to playerID '2'
+      } else if (buttonText === '4') { // Corresponds to playerID '2'
         buttonPlayerId = '2';
-      } else if (button.textLabel.text === '5') { // Corresponds to playerID '3'
+      } else if (buttonText === '5') { // Corresponds to playerID '3'
         buttonPlayerId = '3';
       }
 
