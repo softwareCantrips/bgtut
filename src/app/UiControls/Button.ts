@@ -16,6 +16,7 @@ export class PixiButton extends PIXI.Container {
   private background: PIXI.Graphics;
   private textLabel!: PIXI.Text;
   private options: Required<PixiButtonOptions>;
+  private isManuallyActive: boolean = false;
 
   constructor(options: PixiButtonOptions = {}) {
     super();
@@ -91,8 +92,19 @@ export class PixiButton extends PIXI.Container {
   }
 
   private onOut() {
-    this.draw(this.options.defaultColor);
+    if (this.isManuallyActive) {
+      this.draw(this.options.activeColor);
+    } else {
+      this.draw(this.options.defaultColor);
+    }
   }
 
-
+  public setActive(isActive: boolean): void {
+    this.isManuallyActive = isActive;
+    if (isActive) {
+      this.draw(this.options.activeColor);
+    } else {
+      this.draw(this.options.defaultColor);
+    }
+  }
 }

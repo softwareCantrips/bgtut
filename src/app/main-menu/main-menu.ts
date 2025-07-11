@@ -4,6 +4,7 @@ import { GameService } from '../game-service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Application, Assets, Color, Container, Graphics, RoundedRectangle, Sprite, Texture } from 'pixi.js';
+import { PixiButton } from '../UiControls/Button';
 import { createSpawnButton, createTestButton, createSwitchToGameBoardButton, createPlayers2Button, createPlayers3Button, createPlayers4Button, createPlayers5Button } from '../UiControls/ButtonDefinitions';
 import { makeDraggable } from '../UiControls/DragHelper';
 import { createGridBoard } from '../UiControls/DrawGrid'
@@ -59,42 +60,79 @@ export class MainMenu {
     }
 
     // For now this does not set the amount of players but the playerID
+    const playerButtons: PixiButton[] = [];
+
     const twoPlayers = createPlayers2Button(() => {
-      this.gameService.setNumPlayers(2);
+      this.gameService.setNumPlayers(2); // This seems to be a fixed value, consider if it should change
       this.gameService.setPlayerID('0');
+      this.updatePlayerButtonStates('0', playerButtons);
     });
-    twoPlayers.x = 5
-    twoPlayers.y = 70
+    twoPlayers.x = 5;
+    twoPlayers.y = 70;
+    playerButtons.push(twoPlayers);
+
     const threePlayers = createPlayers3Button(() => {
-      this.gameService.setNumPlayers(2);
+      this.gameService.setNumPlayers(2); // This seems to be a fixed value, consider if it should change
       this.gameService.setPlayerID('1');
+      this.updatePlayerButtonStates('1', playerButtons);
     });
-    threePlayers.x = 75
-    threePlayers.y = 70
+    threePlayers.x = 75;
+    threePlayers.y = 70;
+    playerButtons.push(threePlayers);
+
     const fourPlayers = createPlayers4Button(() => {
-      this.gameService.setNumPlayers(2);
-      this.gameService.setPlayerID('4');
+      this.gameService.setNumPlayers(2); // This seems to be a fixed value, consider if it should change
+      // Assuming playerID '4' and '5' are placeholders and should be '2' and '3'
+      this.gameService.setPlayerID('2');
+      this.updatePlayerButtonStates('2', playerButtons);
     });
-    fourPlayers.x = 145
-    fourPlayers.y = 70
+    fourPlayers.x = 145;
+    fourPlayers.y = 70;
+    playerButtons.push(fourPlayers);
+
     const fivePlayers = createPlayers5Button(() => {
-      this.gameService.setNumPlayers(2);
-      this.gameService.setPlayerID('5');
+      this.gameService.setNumPlayers(2); // This seems to be a fixed value, consider if it should change
+      this.gameService.setPlayerID('3');
+      this.updatePlayerButtonStates('3', playerButtons);
     });
-    fivePlayers.x = 215
-    fivePlayers.y = 70
+    fivePlayers.x = 215;
+    fivePlayers.y = 70;
+    playerButtons.push(fivePlayers);
 
-
-     const switchToGameBoard = createSwitchToGameBoardButton(() => {
+    const switchToGameBoard = createSwitchToGameBoardButton(() => {
       this.router.navigateByUrl('/gameboard');
     });
+    switchToGameBoard.x = 5;
+    switchToGameBoard.y = 145;
 
-    switchToGameBoard.x = 5
-    switchToGameBoard.y = 145
-
-    this.stage.addChild(twoPlayers, threePlayers, fourPlayers, fivePlayers);
+    this.stage.addChild(...playerButtons);
     this.stage.addChild(switchToGameBoard);
 
+    // Set initial button state
+    // Assuming player ID '0' is the default if nothing is set in gameService
+    const initialPlayerId = this.gameService.getPlayerID() || '0';
+    if (!this.gameService.getPlayerID()) { // If no player ID was set, set it to default
+        this.gameService.setPlayerID(initialPlayerId);
+    }
+    this.updatePlayerButtonStates(initialPlayerId, playerButtons);
   }
 
+  private updatePlayerButtonStates(selectedPlayerID: string, buttons: PixiButton[]): void {
+    buttons.forEach(button => {
+      let buttonPlayerId: string | null = null;
+      if (button.textLabel.text === 'P 0') {
+        buttonPlayerId = '0';
+      } else if (button.textLabel.text === 'P 1') {
+        buttonPlayerId = '1';
+      } else if (button.textLabel.text === '4') { // Corresponds to playerID '2'
+        buttonPlayerId = '2';
+      } else if (button.textLabel.text === '5') { // Corresponds to playerID '3'
+        buttonPlayerId = '3';
+      }
+
+      if (buttonPlayerId !== null) {
+        button.setActive(buttonPlayerId === selectedPlayerID);
+      }
+    });
+  }
 }
