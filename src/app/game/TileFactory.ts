@@ -1,7 +1,7 @@
 import { TrackTile, TrackPath, Direction } from './TrackTile';
 
 export function createTrackTile(
-    tileKind: 'brownStraight' | 'brownCurve' | 'greenStraight' | 'greenCurve',
+    tileKind: 'brownStraight' | 'brownCurve' | 'greenStraight' | 'greenCurve'| 'blocked',
     tileID: number
 ) :TrackTile {
 
@@ -38,7 +38,7 @@ export function createTrackTile(
             const greenStraight: TrackTile = {
                 id: tileID,
                 name: tileKind,
-                type: 'notReplaceable',
+                type: 'notReplaceable', // muss wenn ein Zug beendet wird einen anderen Wert bekommen und ab dann kann das Tile nicht mehr bewegt werden
                 image: 'assets/images/straight-green.jpg',
                 orientation: 0,
                 position: { x: 0, y: 0 },
@@ -62,6 +62,17 @@ export function createTrackTile(
             ]
             };
             return greenCurve;
+        case 'blocked':
+            const blocked: TrackTile = {
+            id: tileID,
+            name: tileKind,
+            type: 'static',
+            image: 'assets/images/blocked.jpg',
+            orientation: 0,
+            position: { x: 0, y: 0 },
+            paths: [ ]
+            };
+            return blocked;
         default:
             throw new Error(`Unknown tile kind: ${tileKind}`);
     }

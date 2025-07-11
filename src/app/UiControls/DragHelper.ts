@@ -1,13 +1,20 @@
 import { Container, FederatedPointerEvent, Graphics } from 'pixi.js';
 import { TrackTile } from '../game/TrackTile';
+import { GameService } from '../game-service';
 
 export function makeDraggable(
   target: Container,
   gridSize: number = 0,
   onSnap: (trackTile: TrackTile) => void,
   gridBoard: Container,
-  trackTile: TrackTile
+  trackTile: TrackTile,
+  gameService: GameService
 ) {
+
+  if(trackTile.name === 'blocked') {
+    return
+  }
+
   let dragging = false;
   let offsetX = 0;
   let offsetY = 0;
@@ -29,51 +36,65 @@ export function makeDraggable(
   target.cursor = 'grab';
 
   target.on('pointertap', (event: FederatedPointerEvent) => {
-    if (event.button !== 0) return;
+        if (event.button !== 0) return;
 
-    if (!dragging) {
-      dragging = true;
-      const pos = event.global;
-      offsetX = pos.x - target.x;
-      offsetY = pos.y - target.y;
-      target.cursor = 'grabbing';
-    } else {
-      dragging = false;
-      target.cursor = 'grab';
+        if (!dragging) {
+          dragging = true;
+          const pos = event.global;
+          offsetX = pos.x - target.x;
+          offsetY = pos.y - target.y;
+          target.cursor = 'grabbing';
+          target.zIndex = 200;
+        } else {
+          
 
-      if (gridSize > 0 && gridBounds) {
-        const isInsideGrid =
-          target.x >= gridBounds.x &&
-          target.y >= gridBounds.y &&
-          target.x <= gridBounds.x + gridBounds.width &&
-          target.y <= gridBounds.y + gridBounds.height;
+          if (gridSize > 0 && gridBounds) {
+            const isInsideGrid =
+              target.x >= gridBounds.x &&
+              target.y >= gridBounds.y &&
+              target.x <= gridBounds.x + gridBounds.width &&
+              target.y <= gridBounds.y + gridBounds.height;
 
-        if (isInsideGrid) {
-          const snapped = snapToGrid(target.x, target.y, gridSize);
-          const gridX = Math.floor((snapped.x - gridBounds.x) / gridSize);
-          const gridY = Math.floor((snapped.y - gridBounds.y) / gridSize);
+            if (isInsideGrid) {
+              const snapped = snapToGrid(target.x, target.y, gridSize);
+              const gridX = Math.floor((snapped.x - gridBounds.x) / gridSize);
+              const gridY = Math.floor((snapped.y - gridBounds.y) / gridSize);
 
-          target.x = snapped.x;
-          target.y = snapped.y;
+              const currentState = gameService.getState();
+              if(currentState) {
+                const isBlocked = currentState.G.board[gridY]?.[gridX]?.name === 'blocked';
+                if (isBlocked) {
+                  console.log('Blocked position, move canceled.');
+                  return;
+                }
+              }
 
-          const orientation: 0 | 90 | 180 | 270 = convertRotationToOrientation(target.rotation);
+              dragging = false;
+              target.cursor = 'grab';
+              target.zIndex = 100;
 
-          if (onSnap) {
-            trackTile.position = {x:gridX,y:gridY}
-            trackTile.orientation = orientation;
-            onSnap(trackTile);
+              target.x = snapped.x;
+              target.y = snapped.y;
+
+              const orientation: 0 | 90 | 180 | 270 = convertRotationToOrientation(target.rotation);
+
+              if (onSnap) {
+                trackTile.position = {x:gridX,y:gridY}
+                trackTile.orientation = orientation;
+                onSnap(trackTile);
+              }
+            } else {
+              dragging = false;
+              target.cursor = 'grab';
+              target.zIndex = 100;
+            }
           }
         }
-      }
-    }
   });
 
   target.on('rightclick', () => {
     if (dragging) {
-      console.log('Rotation = ',target.rotation);
-      //target.rotation += Math.PI / 2;
       target.rotation = (target.rotation + Math.PI / 2) % (2 * Math.PI);
-      console.log('Rotation after = ',target.rotation);
     }
   });
 

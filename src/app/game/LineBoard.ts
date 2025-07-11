@@ -2,7 +2,7 @@ import { createTrackTile } from "./TileFactory";
 import { TrackTile, TrackPath, Direction } from "./TrackTile";
 
 export interface MyGameState {
-  board: (TrackTile | null)[][];
+  board: (TrackTile | null)[][];  
   hands: Record<string, TrackTile[]>;
   idCounter: number;
 }
@@ -10,9 +10,9 @@ export interface MyGameState {
 export const MyGame = {
 
   setup: ({ctx}: {ctx:any}): MyGameState => ({
-    board: Array.from({ length: 12 }, () => Array(12).fill(null)),
+    board: blockedTiles(ctx), // 52 geblockte outer tiles //12 Stations = 64 blocking Tiles on the board
     hands: startingHands(ctx),
-    idCounter: ctx.numPlayers * 5 // This should create the correct ID after 5 Tiles for each player get an ID during setup
+    idCounter: 64 + (ctx.numPlayers * 5) // This should create the correct ID after 5 Tiles for each player get an ID during setup
   }
 ),
 
@@ -27,6 +27,12 @@ export const MyGame = {
         //G.board[y][x] = tileName;
       }
     },
+    drawTile(
+      { G, ctx }: { G: MyGameState; ctx: any }
+    ) {
+      console.log("increasing the idCounter");
+      G.idCounter++;
+    },
     addTileToHand(
       { G, ctx }: { G: MyGameState; ctx: any },
       trackTile: TrackTile
@@ -38,11 +44,7 @@ export const MyGame = {
       { G, ctx }: { G: MyGameState; ctx: any },
       trackTile: TrackTile
     ) {
-      
-      console.log('In place track tile x = ',trackTile.position.x);
-      console.log('In place track tile y = ',trackTile.position.y);
       console.log('TrackTile ID = ',trackTile.id);
-      console.log('The orientation of the placed Tile = ',trackTile.orientation);
       const currentPlayer = ctx.currentPlayer;
       removeTileById(G.hands[currentPlayer], trackTile.id);
       G.board[trackTile.position.y][trackTile.position.x] = trackTile;
@@ -73,9 +75,63 @@ export const MyGame = {
 };
 
 
+  function blockedTiles(ctx: any): (TrackTile | null)[][] {
+  const board: (TrackTile | null)[][] = Array.from({ length: 14 }, () =>
+    Array(14).fill(null)
+  );
+
+  let id = 0;
+
+  // Helper to place a blocked tile with unique ID
+  function placeBlockedTile(x: number, y: number) {
+    const blocked: TrackTile = createTrackTile("blocked", id++);
+    blocked.position = { x, y };
+    board[y][x] = blocked;
+  }
+
+  // Top row
+  for (let x = 0; x < 14; x++) {
+    placeBlockedTile(x, 0);
+  }
+
+  // Bottom row
+  for (let x = 0; x < 14; x++) {
+    placeBlockedTile(x, 13);
+  }
+
+  // Left column (excluding corners)
+  for (let y = 1; y < 13; y++) {
+    placeBlockedTile(0, y);
+  }
+
+  // Right column (excluding corners)
+  for (let y = 1; y < 13; y++) {
+    placeBlockedTile(13, y);
+  }
+
+  // Die Stationen erstmal auch als blocked 
+  placeBlockedTile(5, 12);
+  placeBlockedTile(9, 11);
+  placeBlockedTile(2, 9);
+  placeBlockedTile(7, 9);
+  placeBlockedTile(12, 8);
+  placeBlockedTile(4, 7);
+  placeBlockedTile(9, 6);
+  placeBlockedTile(1, 5);
+  placeBlockedTile(6, 4);
+  placeBlockedTile(11, 4);
+  placeBlockedTile(4, 2);
+  placeBlockedTile(8, 1);
+
+  return board;
+}
+
+
+
+
   function startingHands(ctx:any):  Record<string, TrackTile[]> {
      const hands: Record<string, TrackTile[]> = {};
-     let localIdCounter: number = 0;
+     let localIdCounter: number = 65; //startet bei 65 weil 64 blocking Tiles auf dem initialem board liegen
 
     for(let i=0; i< ctx.numPlayers; i++) {
        const playerID = i.toString();

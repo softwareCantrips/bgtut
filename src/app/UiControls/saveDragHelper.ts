@@ -36,8 +36,6 @@ export function makeDraggable(
         const snapped = snapToGrid(target.x, target.y, gridSize);
         const cordX = snapped.x / gridSize
         const cordY = snapped.y / gridSize
-        console.log(cordX)
-        console.log(cordY)
         target.x = snapped.x;
         target.y = snapped.y;
 

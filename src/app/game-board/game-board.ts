@@ -47,21 +47,17 @@ export class GameBoard {
 
     const initialState = this.gameService.getState();
     const thisIsMe = this.gameService.getPlayerID();
-    console.log('Client ID in init = ', thisIsMe);
 
-    this.boardInContainer = createGridBoard(480,480,340,60,40);
+    this.boardInContainer = createGridBoard(560,560,340,60,40);
 
     if(initialState) {
-      console.log('Initial State vorhanden');
       this.hand = initialState.G.hands[thisIsMe]
 
       for(let i = 0; i < this.hand.length; i++) {
-
-          //console.log('Tile = ', this.hand[i].id)
           const tt: TrackTile = copyTrackTile(this.hand[i]); 
             
           const handSpriteContainer = await createSpriteContainer(this.hand[i].image, i);
-          makeDraggable(handSpriteContainer,40,this.handleTtSnap,this.boardInContainer, tt);
+          makeDraggable(handSpriteContainer,40,this.handleTtSnap,this.boardInContainer, tt, this.gameService);
 
           this.stage.addChild(handSpriteContainer)
           this.tilesIDsInClientHand.push(tt.id)
@@ -75,12 +71,8 @@ export class GameBoard {
   }
 
   private async update(state: any):  Promise<void> {
-    //console.log('Game state updated:', state);
-    
     const thisIsMe = this.gameService.getPlayerID();
-    console.log('Client ID = ', thisIsMe);
     const currentPlayer = this.gameService.getCurrentPlayer();
-    console.log('Current Player = ', currentPlayer);
 
     if(!this.isInitialized && currentPlayer) {
       this.init(state);
@@ -91,21 +83,17 @@ export class GameBoard {
           let missingTileIDs: number[] = []
           const tilesOnServerBoard: TrackTile[] = state.G.board
           missingTileIDs = await this.findMissingTileIDs(this.tilesIDsOnClientBoard, tilesOnServerBoard);
-          //console.log('stop here');
           missingTileIDs.forEach(async element => {
-            //console.log('This Element is missing: ', element)
             const flattenedBoard = tilesOnServerBoard.flat().filter((tile): tile is TrackTile => tile !== null);
             const tmpMissingTile: TrackTile | undefined = findTrackTileById(flattenedBoard, element);
-            //console.log('The found Tile = ',tmpMissingTile)
             if(tmpMissingTile) {
               const tt: TrackTile = copyTrackTile(tmpMissingTile); 
 
               const handSpriteContainer = await createSpriteContainer(tmpMissingTile.image, 0);
 
-              makeDraggable(handSpriteContainer,40,this.handleTtSnap,this.boardInContainer, tt);
+              makeDraggable(handSpriteContainer,40,this.handleTtSnap,this.boardInContainer, tt, this.gameService);
 
               placeSpriteOnGrid(handSpriteContainer,tmpMissingTile.position.x, tmpMissingTile.position.y, tmpMissingTile.orientation, 340, 60, 40);
-              //console.log('Adding extra Tile to Grid: ', tmpMissingTile.id);
               this.tilesIDsOnClientBoard.push(tmpMissingTile.id)
               this.stage.addChild(handSpriteContainer);
             }
@@ -131,7 +119,7 @@ export class GameBoard {
     await this.app.init({
       width: 1000,
       height: 700,
-      backgroundColor: 0xADD8E6,
+      backgroundColor: 0xb3fdab,
       antialias: true
     });
 
@@ -153,7 +141,7 @@ export class GameBoard {
     switchToGameBoard.y = 50
 
     const endTheTurnButton = createEndTurnButton(async () => {
-      console.log("Tiles in Hand at the end of the turn = ",this.tilesIDsInClientHand.length)
+      //TODO: Momentan wird immer die selbe ID am ende des Zuges erstellt
       //TODO: at the end of turn add tiles to Hand until 5 Tiles in Hand
       const stateAtEndOfTurn = this.gameService.getState();
 
@@ -161,12 +149,13 @@ export class GameBoard {
       if(currentIdCounter) {
         console.log('CurrentIDCounter = ',currentIdCounter);
         currentIdCounter++;
+        this.gameService.makeMove("drawTile");
         console.log('CurrentIDCounter after increase = ',currentIdCounter);
         const tile:TrackTile = createTrackTile("greenCurve", currentIdCounter);
         const clientTileCopy: TrackTile = copyTrackTile(tile); 
 
         const handSpriteContainer = await createSpriteContainer(clientTileCopy.image, 0);
-        makeDraggable(handSpriteContainer,40,this.handleTtSnap,this.boardInContainer, clientTileCopy);
+        makeDraggable(handSpriteContainer,40,this.handleTtSnap,this.boardInContainer, clientTileCopy, this.gameService);
 
         this.stage.addChild(handSpriteContainer);
         this.gameService.makeMove("addTileToHand",tile);
