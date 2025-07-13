@@ -1,5 +1,5 @@
 import { createTrackTile } from "./TileFactory";
-import { TrackTile, TrackPath, Direction } from "./TrackTile";
+import { TrackTile, TrackPath, Direction, TrackTileKind } from "./TrackTile";
 
 export interface MyGameState {
   board: (TrackTile | null)[][];  
@@ -83,45 +83,131 @@ export const MyGame = {
   let id = 0;
 
   // Helper to place a blocked tile with unique ID
-  function placeBlockedTile(x: number, y: number) {
-    const blocked: TrackTile = createTrackTile("blocked", id++);
+  function placeBlockedTile(x: number, y: number, tilename:TrackTileKind) {
+    const blocked: TrackTile = createTrackTile(tilename, id++);
     blocked.position = { x, y };
     board[y][x] = blocked;
   }
 
+  
+
   // Top row
   for (let x = 0; x < 14; x++) {
-    placeBlockedTile(x, 0);
+    if(x !=2 && x != 3 && x != 6 && x != 7 && x != 10 && x != 11) {
+      placeBlockedTile(x, 0,"blocked");
+    }
+    if(x == 2) {
+      placeBlockedTile(x, 0,"station1-0");
+    }
+    if(x == 3) {
+      placeBlockedTile(x, 0,"station1-90");
+    }
+    if(x == 6) {
+      placeBlockedTile(x, 0,"station2-0");
+    }
+    if(x == 7) {
+      placeBlockedTile(x, 0,"station2-90");
+    }
+    if(x == 10) {
+      placeBlockedTile(x, 0,"station3-0");
+    }
+    if(x == 11) {
+      placeBlockedTile(x, 0,"station3-90");
+    }
+    
   }
 
   // Bottom row
   for (let x = 0; x < 14; x++) {
-    placeBlockedTile(x, 13);
+    if(x !=2 && x != 3 && x != 6 && x != 7 && x != 10 && x != 11) {
+      placeBlockedTile(x, 13,"blocked");
+    }
+    if(x == 2) {
+      placeBlockedTile(x, 13,"station3-270");
+    }
+    if(x == 3) {
+      placeBlockedTile(x, 13,"station3-180");
+    }
+    if(x == 6) {
+      placeBlockedTile(x, 13,"station1-270");
+    }
+    if(x == 7) {
+      placeBlockedTile(x, 13,"station1-180");
+    }
+    if(x == 10) {
+      placeBlockedTile(x, 13,"station2-270");
+    }
+    if(x == 11) {
+      placeBlockedTile(x, 13,"station2-180");
+    }
+    
   }
 
   // Left column (excluding corners)
   for (let y = 1; y < 13; y++) {
-    placeBlockedTile(0, y);
+    if( y !=2 && y != 3 && y != 6 && y != 7 && y != 10 && y != 11 ) {
+      placeBlockedTile(0, y,"blocked");
+    }
+    if(y == 2) {
+      placeBlockedTile(0, y,"station6-0");
+    }
+    if(y == 3) {
+      placeBlockedTile(0, y,"station6-270");
+    }
+    if(y == 6) {
+      placeBlockedTile(0, y,"station4-0");
+    }
+    if(y == 7) {
+      placeBlockedTile(0, y,"station4-270");
+    }
+    if(y == 10) {
+      placeBlockedTile(0, y,"station5-0");
+    }
+    if(y == 11) {
+      placeBlockedTile(0, y,"station5-270");
+    }
+    
   }
 
   // Right column (excluding corners)
   for (let y = 1; y < 13; y++) {
-    placeBlockedTile(13, y);
+    if( y !=2 && y != 3 && y != 6 && y != 7 && y != 10 && y != 11 ) {
+      placeBlockedTile(13, y,"blocked");
+    }
+    if(y == 2) {
+      placeBlockedTile(13, y,"station4-90");
+    }
+    if(y == 3) {
+      placeBlockedTile(13, y,"station4-180");
+    }
+    if(y == 6) {
+      placeBlockedTile(13, y,"station5-90");
+    }
+    if(y == 7) {
+      placeBlockedTile(13, y,"station5-180");
+    }
+    if(y == 10) {
+      placeBlockedTile(13, y,"station6-90");
+    }
+    if(y == 11) {
+      placeBlockedTile(13, y,"station6-180");
+    }
+    
   }
 
   // Die Stationen erstmal auch als blocked 
-  placeBlockedTile(5, 12);
-  placeBlockedTile(9, 11);
-  placeBlockedTile(2, 9);
-  placeBlockedTile(7, 9);
-  placeBlockedTile(12, 8);
-  placeBlockedTile(4, 7);
-  placeBlockedTile(9, 6);
-  placeBlockedTile(1, 5);
-  placeBlockedTile(6, 4);
-  placeBlockedTile(11, 4);
-  placeBlockedTile(4, 2);
-  placeBlockedTile(8, 1);
+  placeBlockedTile(5, 12,"blocked");
+  placeBlockedTile(9, 11,"blocked");
+  placeBlockedTile(2, 9,"blocked");
+  placeBlockedTile(7, 9,"blocked");
+  placeBlockedTile(12, 8,"blocked");
+  placeBlockedTile(4, 7,"blocked");
+  placeBlockedTile(9, 6,"blocked");
+  placeBlockedTile(1, 5,"blocked");
+  placeBlockedTile(6, 4,"blocked");
+  placeBlockedTile(11, 4,"blocked");
+  placeBlockedTile(4, 2,"blocked");
+  placeBlockedTile(8, 1,"blocked");
 
   return board;
 }

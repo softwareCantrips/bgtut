@@ -11,7 +11,7 @@ export function makeDraggable(
   gameService: GameService
 ) {
 
-  if(trackTile.name === 'blocked') {
+  if(trackTile.type === 'static') {
     return
   }
 

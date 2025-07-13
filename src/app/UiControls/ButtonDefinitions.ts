@@ -38,11 +38,11 @@ export function createSwitchToGameBoardButton(onClick?: () => void): PixiButton 
 }
 
 
-export function createPlayers2Button(onClick?: () => void): PixiButton {
+export function takePlayer0Seat(onClick?: () => void): PixiButton {
   return new PixiButton({
-    text: 'P 0',
+    text: 'Player 0',
     onClick: onClick ?? (() => console.log('Player 0')),
-    width: 60,
+    width: 120,
     height: 60,
     defaultColor: 0xbffcdd,
     hoverColor: 0xbffcfb,
@@ -50,11 +50,11 @@ export function createPlayers2Button(onClick?: () => void): PixiButton {
   });
 }
 
-export function createPlayers3Button(onClick?: () => void): PixiButton {
+export function takePlayer1Seat(onClick?: () => void): PixiButton {
   return new PixiButton({
-    text: 'P 1',
+    text: 'Player 1',
     onClick: onClick ?? (() => console.log('Player 1')),
-    width: 60,
+    width: 120,
     height: 60,
     defaultColor: 0xbffcdd,
     hoverColor: 0xbffcfb,
