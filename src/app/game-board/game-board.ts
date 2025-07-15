@@ -12,6 +12,7 @@ import { RouterModule } from '@angular/router';
 import '@pixi/graphics-extras';
 import { MyGameState } from '../game/LineBoard';
 import { createSpriteContainer, placeSpriteOnGrid } from '../UiControls/SpriteFactory';
+import { createText } from '../UiControls/TextFactory';
 import { copyTrackTile, TrackTile, findTrackTileById, removeTrackTileById } from '../game/TrackTile';
 import { createTrackTile } from '../game/TileFactory';
 
@@ -179,6 +180,10 @@ export class GameBoard {
     this.stage.addChild(switchToGameBoard);
     this.stage.addChild(endTheTurnButton);
 
+    const myText = createText("Hello World", 0xffffff, 0x000000, 24);
+    myText.x = 500;
+    myText.y = 10;
+    this.stage.addChild(myText);
   }
 
 async findMissingTileIDs(
