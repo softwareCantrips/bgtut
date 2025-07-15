@@ -12,7 +12,7 @@ import { RouterModule } from '@angular/router';
 import '@pixi/graphics-extras';
 import { MyGameState } from '../game/LineBoard';
 import { createSpriteContainer, placeSpriteOnGrid } from '../UiControls/SpriteFactory';
-import { copyTrackTile, TrackTile, findTrackTileById } from '../game/TrackTile';
+import { copyTrackTile, TrackTile, findTrackTileById, removeTrackTileById } from '../game/TrackTile';
 import { createTrackTile } from '../game/TileFactory';
 
 @Component({
@@ -26,9 +26,6 @@ export class GameBoard {
 
   protected title = 'bgtut';
 
-  private readonly IMAGE_PATH_STRAIGHT_BROWN = 'assets/images/straight-brown.jpg';
-  private straightBrownTexture: Texture | undefined
-
   private gameService = inject(GameService);
 
   private app!: Application;
@@ -38,6 +35,7 @@ export class GameBoard {
   private isInitialized:boolean = false
   private tilesIDsInClientHand: number[] = []
   private tilesIDsOnClientBoard: number[] = []
+  private tilesToPlace: TrackTile[] = []  // Should take up to two Tiles which will be placed on the board when pressing end of turn
 
   constructor(private router: Router) {
     
@@ -141,9 +139,19 @@ export class GameBoard {
     switchToGameBoard.y = 50
 
     const endTheTurnButton = createEndTurnButton(async () => {
-      //TODO: Momentan wird immer die selbe ID am ende des Zuges erstellt
-      //TODO: at the end of turn add tiles to Hand until 5 Tiles in Hand
       const stateAtEndOfTurn = this.gameService.getState();
+
+      this.tilesToPlace
+      for (const tile of this.tilesToPlace) {
+              this.tilesIDsOnClientBoard.push(tile.id)
+              const index = this.tilesIDsInClientHand.indexOf(tile.id);
+              if (index !== -1) {
+                this.tilesIDsInClientHand.splice(index, 1);
+              }
+              this.gameService.makeMove("placeTrackTile",tile);    
+      }
+
+      this.tilesToPlace = []
 
       let currentIdCounter = stateAtEndOfTurn?.G.idCounter;
       if(currentIdCounter) {
@@ -191,13 +199,11 @@ async findMissingTileIDs(
 }
 
 
-handleTtSnap =(trackTile: TrackTile) => {
-            this.tilesIDsOnClientBoard.push(trackTile.id)
-            const index = this.tilesIDsInClientHand.indexOf(trackTile.id);
-            if (index !== -1) {
-              this.tilesIDsInClientHand.splice(index, 1);
-            }
-            this.gameService.makeMove("placeTrackTile",trackTile); 
-}
+  handleTtSnap =(trackTile: TrackTile) => {
+              
+              removeTrackTileById(this.tilesToPlace, trackTile.id);
+              this.tilesToPlace.push(trackTile);
+              
+  }
 
 }

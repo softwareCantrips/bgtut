@@ -26,6 +26,13 @@ export function findTrackTileById(tiles: TrackTile[], id: number): TrackTile | u
   return tiles.find(tile => tile.id === id);
 }
 
+export function removeTrackTileById(array: TrackTile[], id: number): void {
+  const index = array.findIndex(tile => tile.id === id);
+  if (index !== -1) {
+    array.splice(index, 1);
+  }
+}
+
 export const TRACK_TILE_KINDS = [
   'brownStraight',
   'brownCurve',
